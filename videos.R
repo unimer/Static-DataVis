@@ -133,12 +133,33 @@ ggplot(data=data, aes(x=group, y=value)) +
 #---------------------------------------------------------------
 #Where the most people stopped watching
 #--------------------------------------------------------------------
+stopped <- spread(dataset, episode, watchingTime )
+
+stopped <- dataset[,c(7,9,10)]
+
+stopped <- mutate(stopped, percentage = round((stopped$watchingTime / stopped$duration) * 100) )
+
+how_much <- stopped %>%
+              group_by(episode, percentage) %>%
+                summarise(value = n())
+
+first = filter(how_much, episode == 1)
+second = filter(how_much, episode == 2)
+third = filter(how_much, episode == 3)
+four = filter(how_much, episode == 4)
+five = filter(how_much, episode == 5)
+six = filter(how_much, episode == 6)
+seven = filter(how_much, episode == 7)
+eight = filter(how_much, episode == 8)
+nine = filter(how_much, episode == 9)
+ten = filter(how_much, episode == 10)
+eleven = filter(how_much, episode == 11)
+twelve = filter(how_much, episode == 12)
+thirteen = filter(how_much, episode == 13)
+
+p<-ggplot(how_much, aes(x=value, y=percentage, group=episode)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
 
 
 
-
-
-
-
-
-  
