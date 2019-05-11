@@ -2,7 +2,16 @@ library(readr)
 library(dplyr)
 library(lubridate)
 library(ggplot2)
+library(gridExtra)
+library(cowplot)
+library(gridGraphics)
+library(tidyverse)
+library(RColorBrewer)
 
+
+#----------------------------------------------------------
+#Number of views per each hour a of the day
+#---------------------------------------------------------------------------------
 
 dataset <- read_csv("videos.csv")
 
@@ -20,7 +29,7 @@ clock.plot <- function (x, col = rainbow(n), ...) {
   if( max(x)>1 ) x <- x/max(x)
   n <- length(x)
   if(is.null(names(x))) names(x) <- 0:(n-1)
-  m <- 1.05
+  m <- 1.5
   plot(0, type = 'n', xlim = c(-m,m), ylim = c(-m,m), axes = F, xlab = '', ylab = '', ...)
   a <- pi/2 - 2*pi/200*0:200
   polygon( cos(a), sin(a) )
@@ -36,7 +45,62 @@ clock.plot <- function (x, col = rainbow(n), ...) {
     v <- .1
     text((1+v)*cos(a), (1+v)*sin(a), names(x)[i])
   }
+  p1 <- recordPlot()
+  return (p1)
 }
 
 # Use the function on the created data
-clock.plot(x, main = "Number of view each hour of the day")
+p <- clock.plot(x, main = "Number of view each hour of the day")
+
+
+
+#----------------------------------------------------------
+#Number of vews per video
+#---------------------------------------------------------------------------------
+
+nov_per_video <- dataset %>% group_by(episode) %>%
+                    summarise(nov = n())
+
+
+
+# Let's create a vector of data:
+my_vector=c(nov_per_video$nov)
+names(my_vector)=paste("episode: ", c(nov_per_video$episode),sep="")
+
+#create color palette:
+
+# plot
+par(mar=c(7,3,3,3))
+a=barplot(my_vector, col=coul , las=1, names.arg="") 
+text(a[,1], -30, srt = 60, adj= 1, xpd = TRUE, labels = names(my_vector) , cex=1.2)
+
+p2 <- recordPlot()
+
+plot_grid(p, p2, ncol = 1, align = 'v')
+
+#----------------------------------------------------------
+## Number of logged vs number of unknown users
+#-------------------------------------------------------------------
+
+
+users <- jhds %>%
+  group_by(logged, episode) %>% 
+  summarise(nov = n())
+
+users_spreaded <- spread(users, logged, nov )
+
+ggplot(data=users, aes(x=episode, y=nov, fill=logged)) +
+  labs(x="Episode", y = "Number of Views", fill="Logged") +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_brewer(palette="Set2") +
+  
+  theme_minimal()
+
+
+#---------------------------------------------------------------
+#Episode watching time
+#--------------------------------------------------------------------
+
+watching_time <- dataset %>%
+                  group_by(watchingTime, episode) %>%
+                    sumarise(average = n())
