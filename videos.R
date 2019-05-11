@@ -112,22 +112,7 @@ watching_time <- mutate(watching_time, percentage = (watching_time$average / wat
 # make data
 data=data.frame(group=watching_time$episode , value=watching_time$percentage )
 
-palette <- c("dodgerblue1", "skyblue4", "chocolate1", "seagreen4",
-             "bisque3", "red4", "purple4", "mediumpurple3",
-             "maroon", "dodgerblue4", "skyblue2", "darkcyan",
-             "darkslategray3", "lightgreen", "bisque",
-             "palevioletred1", "black", "gray79", "lightsalmon4",
-             "darkgoldenrod1")
 
-# Usual bar plot :
-ggplot(data, aes(x = group, y = value ,fill = group )) + 
-  geom_bar(width = 0.85, stat="identity")
-
-ggplot(data=data, aes(x=group, y=value)) +
-  labs(x="Episode", y = "Average Watching Time") +
-  geom_bar(stat="identity", position=position_dodge())+
-  scale_fill_manual(palette=palette) +
-  theme_minimal()
 
 
 #---------------------------------------------------------------
@@ -157,9 +142,75 @@ eleven = filter(how_much, episode == 11)
 twelve = filter(how_much, episode == 12)
 thirteen = filter(how_much, episode == 13)
 
-p<-ggplot(how_much, aes(x=value, y=percentage, group=episode)) +
+
+
+p1<-ggplot(first, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  labs(x="Video Length [%]", y = "Users")+
+  theme_minimal() +
+  theme(legend.position="none") 
+
+
+
+
+p2<-ggplot(second,aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
   geom_point(aes(color=episode))
 
+
+p3<-ggplot(third, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p4<-ggplot(four,aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p5<-ggplot(five, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p6<-ggplot(six, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p7<-ggplot(seven, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p8<-ggplot(eight, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+
+p9<-ggplot(nine, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p10<-ggplot(ten, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p11<-ggplot(eleven, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p12<-ggplot(twelve, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
+
+
+p13<-ggplot(thirteen, aes(x=percentage, y=value)) +
+  geom_line(aes(color=episode))+
+  geom_point(aes(color=episode))
 
 
