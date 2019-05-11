@@ -102,5 +102,43 @@ ggplot(data=users, aes(x=episode, y=nov, fill=logged)) +
 #--------------------------------------------------------------------
 
 watching_time <- dataset %>%
-                  group_by(watchingTime, episode) %>%
-                    sumarise(average = n())
+                  group_by(episode) %>%
+                    summarise(average = mean(watchingTime), duration_corrected = mean(duration))
+
+watching_time <- mutate(watching_time, percentage = (watching_time$average / watching_time$duration_corrected) * 100)
+
+
+
+# make data
+data=data.frame(group=watching_time$episode , value=watching_time$percentage )
+
+palette <- c("dodgerblue1", "skyblue4", "chocolate1", "seagreen4",
+             "bisque3", "red4", "purple4", "mediumpurple3",
+             "maroon", "dodgerblue4", "skyblue2", "darkcyan",
+             "darkslategray3", "lightgreen", "bisque",
+             "palevioletred1", "black", "gray79", "lightsalmon4",
+             "darkgoldenrod1")
+
+# Usual bar plot :
+ggplot(data, aes(x = group, y = value ,fill = group )) + 
+  geom_bar(width = 0.85, stat="identity")
+
+ggplot(data=data, aes(x=group, y=value)) +
+  labs(x="Episode", y = "Average Watching Time") +
+  geom_bar(stat="identity", position=position_dodge())+
+  scale_fill_manual(palette=palette) +
+  theme_minimal()
+
+
+#---------------------------------------------------------------
+#Where the most people stopped watching
+#--------------------------------------------------------------------
+
+
+
+
+
+
+
+
+  
