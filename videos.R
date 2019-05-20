@@ -16,7 +16,7 @@ library(RColorBrewer)
 #Number of views per each hour a of the day
 #---------------------------------------------------------------------------------
 
-dataset <- read_csv("videos.csv")
+dataset <- read_csv("/home/nikola/famnit2/VIS/Projekt/DataVisVideos/videos.csv")
 
 jhds <- mutate(dataset, just_hour = hour(dataset$hour))
 
