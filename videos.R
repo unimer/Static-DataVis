@@ -22,12 +22,17 @@ jhds <- mutate(dataset, just_hour = hour(dataset$hour))
 
 nov_in_time <- jhds %>%
   group_by(just_hour) %>% 
-  summarise(time = n())
+  summarise(nov = n())
 
-x = c(nov_in_time$time)
+xx = c(nov_in_time$nov)
+
+ii <- cut(nov_in_time$nov, breaks = seq(min(nov_in_time$nov), max(nov_in_time$nov), len = 100), 
+          include.lowest = TRUE)
+
+colors <- colorRampPalette(c("lightblue", "blue"))(99)[ii]
 
 # Clock plot function
-clock.plot <- function (x, col = rainbow(n), ...) {
+clock.plot <- function (x, col = heat.colors(315, alpha = 1, rev = TRUE), ...) {
   if( min(x)<0 ) x <- x - min(x)
   if( max(x)>1 ) x <- x/max(x)
   n <- length(x)
@@ -44,7 +49,7 @@ clock.plot <- function (x, col = rainbow(n), ...) {
   for (i in 1:n) {
     a <- pi/2 - 2*pi/n*(i-1)
     b <- pi/2 - 2*pi/n*i
-    polygon( c(0, x[i]*cos(a+ca), 0), c(0, x[i]*sin(a+ca), 0), col=col[i] )
+    polygon( c(0, x[i]*cos(a+ca), 0), c(0, x[i]*sin(a+ca), 0), col=col[x[i]] )
     v <- .1
     text((1+v)*cos(a), (1+v)*sin(a), names(x)[i])
   }
@@ -53,7 +58,7 @@ clock.plot <- function (x, col = rainbow(n), ...) {
 }
 
 # Use the function on the created data
-p <- clock.plot(x)
+p <- clock.plot(xx)
 
 
 
@@ -62,22 +67,20 @@ p <- clock.plot(x)
 #---------------------------------------------------------------------------------
 
 nov_per_video <- dataset %>% group_by(episode) %>%
-                    summarise(nov = n())
+                    summarise(number_of_views = n())
+ID <- 1:13
 
 
+ggplot(data=nov_per_video, aes(x=episode, y=number_of_views)) +
+  ggtitle("                Number of views per episode\n") +
+  labs(x="Episode", y = "Number of Views") +
+  geom_bar(stat="identity", position=position_dodge())+
+  #ylim(min=0, max=100) +
+  scale_x_continuous("Episode", labels = as.character(ID), breaks = ID)+
+  theme_minimal() +
+  theme(legend.position="none") 
 
-# Let's create a vector of data:
-my_vector=c(nov_per_video$nov)
-names(my_vector)=paste("Episode: ", c(nov_per_video$episode),sep="")
 
-#create color palette:
-
-# plot
-par(mar=c(7,3,3,3))
-a<-barplot(my_vector,las=1, names.arg="") 
-text(a[,1], -30, srt = 60, adj= 1, xpd = TRUE, labels = names(my_vector) , cex=1.2)
-
-p2 <- recordPlot()
 
 #----------------------------------------------------------
 ## Number of logged vs number of unknown users
@@ -90,11 +93,16 @@ users <- jhds %>%
 
 users_spreaded <- spread(users, logged, nov )
 
+
+ID <- 1:13
+
+
 ggplot(data=users, aes(x=episode, y=nov, fill=logged)) +
+  ggtitle("            Registered vs Unregistered Users\n") +
   labs(x="Episode", y = "Number of Views", fill="Logged") +
   geom_bar(stat="identity", position=position_dodge())+
   scale_fill_brewer(palette="Set2") +
-  
+  scale_x_continuous("Episode", labels = as.character(ID), breaks = ID)+
   theme_minimal()
 
 
@@ -112,6 +120,7 @@ watching_time <- mutate(watching_time, percentage = (watching_time$average / wat
 
 
 ggplot(data=watching_time, aes(x=episode, y=percentage)) +
+  
   labs(x="Episode", y = "Number of Views") +
   geom_bar(stat="identity", position=position_dodge())+
   ylim(min=0, max=100) +
@@ -152,7 +161,7 @@ thirteen = filter(how_much, episode == 13)
 
 p1<-ggplot(first, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle = "Episode 1", x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
@@ -161,80 +170,81 @@ p1<-ggplot(first, aes(x=percentage, y=value)) +
 
 p2<-ggplot(second,aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 2", x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p3<-ggplot(third, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 3",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p4<-ggplot(four,aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 4",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 p5<-ggplot(five, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 5",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 p6<-ggplot(six, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 6",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 p7<-ggplot(seven, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 7",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 p8<-ggplot(eight, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 8",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p9<-ggplot(nine, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 9",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 p10<-ggplot(ten, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 10",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p11<-ggplot(eleven, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 11",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p12<-ggplot(twelve, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 12",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
 
 p13<-ggplot(thirteen, aes(x=percentage, y=value)) +
   geom_line(aes(color=episode))+
-  labs(x="Video Length [%]", y = "Users")+
+  labs(subtitle= "Episode 13",x="Video Length [%]", y = "Users")+
   theme_minimal() +
   theme(legend.position="none") 
 
-plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, ncol=3)
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, ncol=3, scale=1)
+  
